@@ -3,8 +3,6 @@ class Rp_Notification_Client extends Rp_Notification_Base
     @Alerts=new Meteor.Collection null
     that=@
     Meteor.startup ->
-      Rp_Notifications.after.insert (user,doc)->
-        console.log "inserted"
       Tracker.autorun ->
         Meteor.subscribe('rp_alerts',that.getAlertFilter(),that.limit)
         alertFilter=_.extend(that.getAlertFilter(),{isNew:true})

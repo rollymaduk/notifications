@@ -4,7 +4,7 @@ class Rp_Notification_Server extends Rp_Notification_Base
     Meteor.startup ()->
       Meteor.publish('rp_activities',(qry={},limit=@limit)->
         if @userId
-          qry=_.extend(qry,{audience:$in:[@userId]})
+          qry=_.extend(qry,$or:[{audience:$in:[@userId]},{createdBy:@userId}])
           Rp_Notifications.find(qry,{limit:limit,sort:createdAt:-1})
         else
           @ready()
