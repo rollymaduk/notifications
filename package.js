@@ -35,9 +35,10 @@ Package.onUse(function(api) {
     api.use('reactive-var');
     api.use('aldeed:simple-schema');
     api.use('gfk:server-messages');
+    api.use('reywood:publish-composite');
     api.use('zimme:collection-timestampable');
-    api.export('Rp_Notification');
-    api.addFiles(['common/base.coffee','common/model.coffee']);
+    api.export('Rp_Notification',['client','server']);
+    api.addFiles(['common/base.coffee','common/model.coffee'],['client','server']);
     api.addFiles(['server/notifications.coffee'],'server');
     api.addFiles(['client/notifications.coffee'],'client');
 });

@@ -2,28 +2,34 @@ class Rp_Notification_Server extends Rp_Notification_Base
   constructor:(@limit=20)->
     that=@
     Meteor.startup ()->
-      Meteor.publish('rp_activities',(qry={},limit=@limit)->
-        if @userId
-          qry=_.extend(qry,$or:[{audience:$in:[@userId]},{createdBy:@userId}])
-          Rp_Notifications.find(qry,{limit:limit,sort:createdAt:-1})
-        else
-          @ready()
+      Meteor.publishComposite('rp_latest_notifications',(qry={},limit=@limit)->
+        collectionName:"latestNotifications"
+        find:->
+          if @userId
+            qry=_.extend(qry,$or:[{audience:$in:[@userId]}],{isNew:true})
+            ###Counts.publish @,'latest_notification_count',Rp_Notifications.find(),{noReady:true,fastCount:true}###
+            Rp_Notifications.find(qry,{limit:limit,sort:createdAt:-1})
+
       )
 
-      Meteor.publish('rp_alerts',(qry={},limit=@limit)->
-        if @userId
-          qry=_.extend(qry,{isNew:true,audience:$in:[@userId]})
-          Rp_Notifications.find(qry,{limit:limit,sort:createdAt:-1})
-        else
-          @ready()
+      Meteor.publishComposite('rp_all_notifications',(qry={},limit=@limit)->
+        collectionName:"allNotifications"
+        find:->
+          if @userId
+            qry=_.extend(qry,$or:[{audience:$in:[@userId]}])
+            ###Counts.publish @,'notification_count',Rp_Notifications.find(),{noReady:true,fastCount:true}###
+            Rp_Notifications.find(qry,{limit:limit,sort:createdAt:-1})
       )
+
+
 
       Meteor.methods
-        rp_update_alert_status:(items)->
+        rp_update_notification_status:(items)->
+          items=if _.isArray(items) then items else [items]
           try
-            check(items,[String])
             check(@userId,String)
-            Rp_Notifications.update(_id:$in:items,$set:isNew:false,multi:true)
+            check(items,[String])
+            Rp_Notifications.update({_id:$in:items},$set:{isNew:false},{multi:true})
           catch err
             throw new Meteor.Error(5001,err.message)
 

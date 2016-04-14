@@ -32,7 +32,7 @@ models.Rp_Notification=new SimpleSchema
       else
         @unset()
 
-@Rp_Notifications=new Meteor.Collection('rp_notifications')
+@Rp_Notifications=new Meteor.Collection("#{Meteor.settings.public.dbPrefix}rp_notifications")
 
 Rp_Notifications.attachSchema(models.Rp_Notification)
 Rp_Notifications.attachBehaviour('timestampable')
